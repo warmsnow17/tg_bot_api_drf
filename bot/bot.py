@@ -25,9 +25,9 @@ async def main():
     dp.register_callback_query_handler(user_handlers.ask_for_hand_contact, text='hand', state=BaseStates.phone)
     dp.register_callback_query_handler(
         user_handlers.ask_for_auto_contact, text='auto', state=BaseStates.phone)
-    dp.register_message_handler(user_handlers.auto_phone_contact, content_types=types.ContentType.CONTACT,
-                                state=BaseStates.get_auto_phone)
-    dp.register_message_handler(user_handlers.hand_phone_contact, state=BaseStates.get_hand_phone)
+    dp.register_message_handler(user_handlers.save_phone_contact, content_types=[types.ContentType.CONTACT, types.ContentType.TEXT],
+                                state=BaseStates.get_phone)
+    dp.register_callback_query_handler(user_handlers.choose_options, text='send_phone', state=BaseStates.choose_options)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling()
