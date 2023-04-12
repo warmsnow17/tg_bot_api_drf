@@ -7,3 +7,9 @@ class BaseStates(StatesGroup):
     get_phone = State()
     choose_options = State()
     end = State()
+
+
+class Complain(BaseStates):
+    get_geolocation = State()
+    allowed_geolocation = State()
+    search_object = State()

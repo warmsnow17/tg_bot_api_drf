@@ -3,8 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message
 import keyboards.keyboards as kb
 from lexicon.lexicon_ru import SEND_AUTO_NUMBER, SEND_HAND_NUMBER, START_MESSAGE, CHOOSE_INPUT_TYPE, YOUR_PHONE_NUMBER, \
-    CHOOSE_OPTIONS
-from states.tgbot_states import BaseStates
+    CHOOSE_OPTIONS, ALLOWED
+from states.tgbot_states import BaseStates, Complain
 
 
 # Хендлер для команды /start
@@ -49,6 +49,7 @@ async def save_phone_contact(message: Message, state: FSMContext):
 
 async def choose_options(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.message.answer(CHOOSE_OPTIONS, reply_markup=kb.choose_options())
-    await state.finish()
+    await state.set_state(Complain.get_geolocation)
+
 
 

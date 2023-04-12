@@ -22,7 +22,7 @@ def send_button():
 
 def ask_for_contact():
     # Создаем кнопку для запроса контакта
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     keyboard.add(KeyboardButton(text="Отправить номер телефона 📱", request_contact=True))
     return keyboard
 
@@ -35,4 +35,19 @@ def choose_options():
     keyboard.row(complain_bad_road)
     keyboard.row(assess_quality_repair)
     keyboard.row(suggest_idea)
+    return keyboard
+
+
+def allowed_not_allowed():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    allowed = InlineKeyboardButton("Разрешить", callback_data='allowed')
+    not_allowed = InlineKeyboardButton("Не разрешать", callback_data='not_allowed')
+    keyboard.row(allowed)
+    keyboard.row(not_allowed)
+    return keyboard
+
+
+def get_geolocation():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    keyboard.add(KeyboardButton(text="Отправить местоположение 📍", request_location=True))
     return keyboard
