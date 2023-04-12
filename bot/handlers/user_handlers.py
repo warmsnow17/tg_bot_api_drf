@@ -1,9 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 import keyboards.keyboards as kb
 from lexicon.lexicon_ru import SEND_AUTO_NUMBER, SEND_HAND_NUMBER, START_MESSAGE, CHOOSE_INPUT_TYPE, YOUR_PHONE_NUMBER, \
-    CHOOSE_OPTIONS, ALLOWED
+    CHOOSE_OPTIONS
 from states.tgbot_states import BaseStates, Complain
 
 
@@ -30,7 +30,7 @@ async def ask_for_auto_contact(callback_query: CallbackQuery, state: FSMContext)
 
 
 async def ask_for_hand_contact(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.message.answer(SEND_HAND_NUMBER, reply_markup=types.ReplyKeyboardRemove())
+    await callback_query.message.answer(SEND_HAND_NUMBER, reply_markup=ReplyKeyboardRemove())
     await state.set_state(BaseStates.get_phone)
 
 

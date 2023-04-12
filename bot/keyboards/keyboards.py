@@ -15,7 +15,14 @@ def choose_phone_number():
 
 def send_button():
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
-    send_file_btn = InlineKeyboardButton('Отправить', callback_data='send_phone')
+    send_file_btn = InlineKeyboardButton('Отправить', callback_data='send')
+    keyboard.row(send_file_btn)
+    return keyboard
+
+
+def check_exists_data_base():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    send_file_btn = InlineKeyboardButton('Проверить есть ли в базе данных', callback_data='check')
     keyboard.row(send_file_btn)
     return keyboard
 
@@ -41,7 +48,7 @@ def choose_options():
 def allowed_not_allowed():
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     allowed = InlineKeyboardButton("Разрешить", callback_data='allowed')
-    not_allowed = InlineKeyboardButton("Не разрешать", callback_data='not_allowed')
+    not_allowed = InlineKeyboardButton("Выбрать из списка объектов", callback_data='not_allowed')
     keyboard.row(allowed)
     keyboard.row(not_allowed)
     return keyboard
@@ -50,4 +57,24 @@ def allowed_not_allowed():
 def get_geolocation():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     keyboard.add(KeyboardButton(text="Отправить местоположение 📍", request_location=True))
+    return keyboard
+
+
+def select_from_list():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    object_1 = InlineKeyboardButton("объект 1", callback_data='object1')
+    object_2 = InlineKeyboardButton("объект 2", callback_data='object2')
+    object_3 = InlineKeyboardButton("объект 3", callback_data='object')
+    keyboard.row(object_1)
+    keyboard.row(object_2)
+    keyboard.row(object_3)
+    return keyboard
+
+
+def continue_or_stop():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    continue_ = InlineKeyboardButton("Продолжить", callback_data='continue')
+    stop_ = InlineKeyboardButton("Остановиться", callback_data='stop')
+    keyboard.row(continue_)
+    keyboard.row(stop_)
     return keyboard

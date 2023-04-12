@@ -9,7 +9,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
 
-from states.tgbot_states import BaseStates, Complain, TestStates
+from states.tgbot_states import BaseStates, Complain
+
 
 async def main():
     logger.info('Start bot')
@@ -28,14 +29,17 @@ async def main():
     dp.register_message_handler(user_handlers.save_phone_contact,
                                 content_types=[types.ContentType.CONTACT, types.ContentType.TEXT],
                                 state=BaseStates.get_phone)
-    dp.register_callback_query_handler(user_handlers.choose_options, text='send_phone', state=BaseStates.choose_options)
+    dp.register_callback_query_handler(user_handlers.choose_options, text='send', state=BaseStates.choose_options)
 
-
-
-    dp.register_callback_query_handler(complain_handlers.get_geolocation, text='complain', state=Complain.get_geolocation)
-    dp.register_callback_query_handler(complain_handlers.allowed_geolocation, text='allowed', state=Complain.allowed_geolocation)
+    dp.register_callback_query_handler(complain_handlers.get_geolocation, text='complain',
+                                       state=Complain.get_geolocation)
+    dp.register_callback_query_handler(complain_handlers.allowed_not_allowed, text=['allowed', 'not_allowed'],
+                                       state=Complain.allowed_geolocation)
     dp.register_message_handler(complain_handlers.search_object, content_types=[ContentType.LOCATION],
                                 state=Complain.search_object)
+    dp.register_callback_query_handler(complain_handlers.select_from_list, text=['object1', 'send', 'object2'], state=Complain.select_from_list)
+    dp.register_callback_query_handler(complain_handlers.check_exists_data_base, text='check', state=Complain.check_object_in_data_base)
+
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling()
@@ -46,4 +50,3 @@ if __name__ == '__main__':
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info('Bot Stopped')
-

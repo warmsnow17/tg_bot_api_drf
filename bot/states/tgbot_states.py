@@ -13,3 +13,7 @@ class Complain(BaseStates):
     get_geolocation = State()
     allowed_geolocation = State()
     search_object = State()
+    select_from_list = State()
+    not_allowed_geolocation = State()
+    check_object_in_data_base = State()
+    continue_or_stop = State()
