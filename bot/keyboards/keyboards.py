@@ -9,7 +9,8 @@ def choose_phone_number():
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     button_manual = InlineKeyboardButton('Ввести в ручную', callback_data='hand')
     button_auto = InlineKeyboardButton('Отправить автоматически', callback_data='auto')
-    keyboard.row(button_manual, button_auto)
+    keyboard.row(button_manual)
+    keyboard.row(button_auto)
     return keyboard
 
 
@@ -74,7 +75,16 @@ def select_from_list():
 def continue_or_stop():
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     continue_ = InlineKeyboardButton("Продолжить", callback_data='continue')
-    stop_ = InlineKeyboardButton("Остановиться", callback_data='stop')
+    stop_ = InlineKeyboardButton("Дождемся ремонта", callback_data='stop')
     keyboard.row(continue_)
     keyboard.row(stop_)
+    return keyboard
+
+
+def yes_no_kb():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    yes = InlineKeyboardButton("Да", callback_data='yes_back_to_start')
+    no = InlineKeyboardButton("Нет", callback_data='no')
+    keyboard.row(yes)
+    keyboard.row(no)
     return keyboard

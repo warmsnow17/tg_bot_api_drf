@@ -6,7 +6,7 @@ class BaseStates(StatesGroup):
     phone = State()  # Состояние для получения номера телефона
     get_phone = State()
     choose_options = State()
-    end = State()
+    get_choice = State()
 
 
 class Complain(BaseStates):
@@ -17,3 +17,6 @@ class Complain(BaseStates):
     not_allowed_geolocation = State()
     check_object_in_data_base = State()
     continue_or_stop = State()
+    final_yes_no = State()
+    describe_problem = State()
+    photo_problem = State()
