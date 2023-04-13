@@ -30,3 +30,6 @@ class AssessQualityRepair(BaseStates):
 
 class SuggestIdea(BaseStates):
     describe_idea = State()
+    get_describe_idea = State()
+    send_foto_about_idea_or_not = State()
+    send_foto = State()

@@ -99,3 +99,13 @@ def quality_1_to_10():
 
     return keyboard
 
+
+def send_foto_or_not():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    yes = InlineKeyboardButton("Прислать фото", callback_data='send_photo')
+    no = InlineKeyboardButton("Нет", callback_data='no_photo')
+    keyboard.row(yes)
+    keyboard.row(no)
+    return keyboard
+
+

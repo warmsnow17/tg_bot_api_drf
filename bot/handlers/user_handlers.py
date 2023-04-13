@@ -5,9 +5,10 @@ import keyboards.keyboards as kb
 from config_data.loader_bot import bot
 from handlers import complain_handlers
 from handlers.complain_handlers import get_geolocation
+from handlers.suggest_idea import describe_idea
 from lexicon.lexicon_ru import SEND_AUTO_NUMBER, SEND_HAND_NUMBER, START_MESSAGE, CHOOSE_INPUT_TYPE, YOUR_PHONE_NUMBER, \
     CHOOSE_OPTIONS
-from states.tgbot_states import BaseStates, Complain
+from states.tgbot_states import BaseStates, Complain, SuggestIdea
 
 
 # Хендлер для команды /start
@@ -66,9 +67,9 @@ async def get_choice(callback_query: CallbackQuery, state: FSMContext):
         await state.set_state(Complain.get_geolocation)
         await get_geolocation(callback_query.message, state)
     if callback_query.data == 'idea':
-        # await state.set_state(Complain.get_geolocation)
-        # await get_geolocation(callback_query.message, state)
-        pass
+        await state.set_state(SuggestIdea.describe_idea)
+        await describe_idea(callback_query.message, state)
+
 
 
 

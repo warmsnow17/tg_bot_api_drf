@@ -68,7 +68,6 @@ async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContex
             await state.set_state(Complain.describe_problem)
 
 
-
 async def continue_or_stop(callback_query: CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
     choose_continue_or_stop = callback_query.data
@@ -98,7 +97,6 @@ async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
     if yes_no == 'yes_back_to_start':
         await callback_query.message.answer(CHOOSE_OPTIONS, reply_markup=kb.choose_options())
         await state.set_state(BaseStates.choose_options)
-
     if yes_no == 'no':
         await callback_query.message.answer(FINAL)
         await state.finish()

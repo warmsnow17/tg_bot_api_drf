@@ -5,13 +5,13 @@ from aiogram.types import ContentType
 from loguru import logger
 
 from config_data.loader_bot import bot
-from handlers import user_handlers, complain_handlers, assess_quality_repair
+from handlers import user_handlers, complain_handlers, assess_quality_repair, suggest_idea
 
 from aiogram import types, Dispatcher
 
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
 
-from states.tgbot_states import BaseStates, Complain, AssessQualityRepair
+from states.tgbot_states import BaseStates, Complain, AssessQualityRepair, SuggestIdea
 
 
 async def main(bot):
@@ -45,6 +45,10 @@ async def main(bot):
 
     dp.register_callback_query_handler(assess_quality_repair.leave_comment, state=AssessQualityRepair.leave_comment)
     dp.register_message_handler(assess_quality_repair.final_handler, state=AssessQualityRepair.final_handler)
+    dp.register_message_handler(suggest_idea.describe_idea, state=SuggestIdea.describe_idea)
+    dp.register_message_handler(suggest_idea.get_describe_idea, state=SuggestIdea.get_describe_idea)
+    dp.register_callback_query_handler(suggest_idea.send_foto_about_idea_or_not, state=SuggestIdea.send_foto_about_idea_or_not)
+    dp.register_message_handler(suggest_idea.send_foto, content_types=[types.ContentType.PHOTO], state=SuggestIdea.send_foto)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling()
