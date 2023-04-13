@@ -88,3 +88,14 @@ def yes_no_kb():
     keyboard.row(yes)
     keyboard.row(no)
     return keyboard
+
+
+def quality_1_to_10():
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+
+    for i in range(1, 11):
+        button = InlineKeyboardButton(str(i), callback_data=str(i))
+        keyboard.row(button)
+
+    return keyboard
+

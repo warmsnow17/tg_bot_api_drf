@@ -20,3 +20,13 @@ class Complain(BaseStates):
     final_yes_no = State()
     describe_problem = State()
     photo_problem = State()
+
+
+class AssessQualityRepair(BaseStates):
+    quality_1_to_10 = State()
+    leave_comment = State()
+    final_handler = State()
+
+
+class SuggestIdea(BaseStates):
+    describe_idea = State()

@@ -61,9 +61,16 @@ async def choose_options(callback_query: CallbackQuery, state: FSMContext):
 
 async def get_choice(callback_query: CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
-    if callback_query.data == 'complain':
+    await state.update_data(choose_options=callback_query.data)
+    if callback_query.data == 'complain' or callback_query.data == 'repair':
         await state.set_state(Complain.get_geolocation)
         await get_geolocation(callback_query.message, state)
+    if callback_query.data == 'idea':
+        # await state.set_state(Complain.get_geolocation)
+        # await get_geolocation(callback_query.message, state)
+        pass
+
+
 
 
 

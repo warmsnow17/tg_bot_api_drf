@@ -3,9 +3,10 @@ from aiogram.dispatcher import FSMContext
 
 import keyboards.keyboards as kb
 from bot import bot
+from handlers.assess_quality_repair import quality_1_to_10
 from lexicon.lexicon_ru import ALLOWED, SEND_GEOLOCATION, SELECT_FROM_LIST, YOUR_OBJECT_IS, OBJECT_IN_BASE, THANK_YOU, \
     FINAL, CHOOSE_OPTIONS, DESCRIBE_PROBLEM, GET_PHOTO, THANKS_WE_WILL_CONTACT_YOU, DESCRIBE_PROBLEM_SECOND
-from states.tgbot_states import Complain, BaseStates
+from states.tgbot_states import Complain, BaseStates, AssessQualityRepair
 
 
 async def get_geolocation(message: Message, state: FSMContext):
@@ -44,14 +45,28 @@ async def select_from_list(callback_query: CallbackQuery, state: FSMContext):
 
 async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
-    data = await state.get_data("_object")
-    my_data = data["_object"]
-    if my_data == 'object1' or my_data == 'object2':
-        await callback_query.message.answer(OBJECT_IN_BASE, reply_markup=kb.continue_or_stop())
-        await state.set_state(Complain.continue_or_stop)
-    if my_data == 'send':  # условие при котором объекта в базе данных нет
-        await callback_query.message.answer(DESCRIBE_PROBLEM)
-        await state.set_state(Complain.describe_problem)
+    data_choice = await state.get_data()
+    data = data_choice['choose_options']
+    if data == 'complain':
+        data = await state.get_data("_object")
+        my_data = data["_object"]
+        if my_data == 'object1' or my_data == 'object2':
+            await callback_query.message.answer(OBJECT_IN_BASE, reply_markup=kb.continue_or_stop())
+            await state.set_state(Complain.continue_or_stop)
+        if my_data == 'send':  # условие при котором объекта в базе данных нет
+            await callback_query.message.answer(DESCRIBE_PROBLEM)
+            await state.set_state(Complain.describe_problem)
+    if data == 'repair':
+        data = await state.get_data("_object")
+        my_data = data["_object"]
+        if my_data == 'object1' or my_data == 'object2':
+            await callback_query.message.answer("Проверили базу данных пишется инфа о подрядчике гарантийном сроке и тд")
+            await state.set_state(AssessQualityRepair.quality_1_to_10)
+            await quality_1_to_10(callback_query.message, state)
+        if my_data == 'send':  # условие при котором объекта в базе данных нет
+            await callback_query.message.answer(DESCRIBE_PROBLEM)
+            await state.set_state(Complain.describe_problem)
+
 
 
 async def continue_or_stop(callback_query: CallbackQuery, state: FSMContext):
