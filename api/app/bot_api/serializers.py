@@ -15,17 +15,18 @@ class Base64ImageField(serializers.ImageField):
         return super().to_internal_value(data)
 
 
-class CitySerializer(serializers.ModelSerializer):
-    roads = serializers.StringRelatedField(many=True, read_only=True)
-    class Meta:
-        model = City
-        fields = ('name', 'roads')
-
-
 class RoadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Road
         fields = '__all__'
+
+
+class CitySerializer(serializers.ModelSerializer):
+    roads = RoadSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = City
+        fields = ('name', 'roads')
 
 
 class ReportSerializer(serializers.ModelSerializer):

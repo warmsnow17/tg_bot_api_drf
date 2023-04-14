@@ -31,7 +31,7 @@ class Road(models.Model):
                                        null=True, blank=True)
 
     def __str__(self):
-        return f'{self.name}'
+        return (self.pk, self.name)
 
 
 class Report(models.Model):
