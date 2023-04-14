@@ -2,6 +2,13 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
+class City(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Населённый пункт')
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class Road(models.Model):
     class Status(models.TextChoices):
         BROKEN = 'BR'
@@ -11,6 +18,9 @@ class Road(models.Model):
 
     name = models.CharField(max_length=100,
                             verbose_name='Наименование объекта')
+    city = models.ForeignKey(City, on_delete=models.PROTECT,
+                             verbose_name='Населённый пункт', null=True, blank=True,
+                             related_name='roads')
     status = models.CharField(max_length=512, choices=Status.choices)
     geolocation = models.URLField()
     contractor = models.CharField(max_length=500, blank=True, null=True,
@@ -19,6 +29,9 @@ class Road(models.Model):
                                     null=True, blank=True)
     repair_date = models.DurationField(verbose_name='Дата ремонта',
                                        null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Report(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Report, Suggestion, Rating
+from .models import Report, Suggestion, Rating, Road, City
 import base64  # Модуль с функциями кодирования и декодирования base64
 
 from django.core.files.base import ContentFile
@@ -13,6 +13,19 @@ class Base64ImageField(serializers.ImageField):
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
+
+
+class CitySerializer(serializers.ModelSerializer):
+    roads = serializers.StringRelatedField(many=True, read_only=True)
+    class Meta:
+        model = City
+        fields = ('name', 'roads')
+
+
+class RoadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Road
+        fields = '__all__'
 
 
 class ReportSerializer(serializers.ModelSerializer):

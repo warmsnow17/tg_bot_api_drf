@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Road, Report, Rating, Suggestion
+from .models import Road, Report, Rating, Suggestion, City
 
 
 class ReportInline(admin.StackedInline):
@@ -23,3 +23,7 @@ class RoadAdmin(admin.ModelAdmin):
 @admin.register(Suggestion)
 class SuggestionAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('name',)
