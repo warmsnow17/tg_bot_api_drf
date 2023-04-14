@@ -1,8 +1,8 @@
 from rest_framework import mixins, viewsets
-from .models import Rating, Report, Suggestion
-from .serializers import (RatingSerializer,
-                          ReportSerializer,
-                          SuggestionSerializer)
+from bot_api.models import Rating, Report, Suggestion
+from bot_api.serializers import (RatingSerializer,
+                                 ReportSerializer,
+                                 SuggestionSerializer)
 
 
 class CreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
