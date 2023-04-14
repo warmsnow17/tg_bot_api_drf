@@ -61,14 +61,37 @@ def get_geolocation():
     return keyboard
 
 
-def select_from_list():
+# def select_from_list():
+#     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+#     object_1 = InlineKeyboardButton("объект 1", callback_data='object1')
+#     object_2 = InlineKeyboardButton("объект 2", callback_data='object2')
+#     object_3 = InlineKeyboardButton("объект 3", callback_data='object')
+#     keyboard.row(object_1)
+#     keyboard.row(object_2)
+#     keyboard.row(object_3)
+#     return keyboard
+
+
+def select_from_list(city_data: list, is_city=True, city_name=None):
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
-    object_1 = InlineKeyboardButton("объект 1", callback_data='object1')
-    object_2 = InlineKeyboardButton("объект 2", callback_data='object2')
-    object_3 = InlineKeyboardButton("объект 3", callback_data='object')
-    keyboard.row(object_1)
-    keyboard.row(object_2)
-    keyboard.row(object_3)
+
+    if is_city:
+        callback_prefix = 'city_'
+        for item in city_data:
+            button = InlineKeyboardButton(item['name'], callback_data=callback_prefix + item['name'])
+            keyboard.row(button)
+    else:
+        callback_prefix = 'street_'
+        streets = []
+        for item in city_data:
+            if item['name'] == city_name:
+                streets = item['roads']
+                break
+
+        for street in streets:
+            button = InlineKeyboardButton(street['name'], callback_data=callback_prefix + street['name'])
+            keyboard.row(button)
+
     return keyboard
 
 

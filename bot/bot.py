@@ -35,6 +35,7 @@ async def main(bot):
                                        state=Complain.allowed_geolocation)
     dp.register_message_handler(complain_handlers.search_object, content_types=[ContentType.LOCATION],
                                 state=Complain.search_object)
+    dp.register_callback_query_handler(complain_handlers.select_from_list_pre, state=Complain.select_from_list_pre)
     dp.register_callback_query_handler(complain_handlers.select_from_list, state=Complain.select_from_list)
     dp.register_callback_query_handler(complain_handlers.check_exists_data_base, text='check', state=Complain.check_object_in_data_base)
     dp.register_callback_query_handler(complain_handlers.continue_or_stop, text=['continue', 'stop'],
