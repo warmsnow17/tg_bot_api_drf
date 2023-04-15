@@ -93,14 +93,19 @@ async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContex
             await state.set_state(Complain.describe_problem)
 
     else:
-        data = await state.get_data("_object")
-        my_data = data["_object"].split('_')[1]
-        found = False
+        my_data = data_choice["_object"].split('_')[1]
+        found_road = None
         for city in api_object_data:
-            if my_data in [road['name'] for road in city['roads']]: # тут потенциально очень долго будет итерироваться
-                found = True
+            for road in city['roads']:
+                if my_data == road['name']:
+                    found_road = road
+                    break
+            if found_road:
                 break
-        if found:
+
+        if found_road:
+            await state.update_data(load_object_to_api=found_road)
+            print('my_data----', found_road)
             await callback_query.message.answer("Проверили базу данных пишется инфа о подрядчике гарантийном сроке и тд")
             await state.set_state(AssessQualityRepair.quality_1_to_10)
             await quality_1_to_10(callback_query.message, state)
