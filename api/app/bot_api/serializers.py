@@ -26,7 +26,7 @@ class CitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
-        fields = ('name', 'roads')
+        fields = ('pk', 'name', 'roads')
 
 
 class ReportSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Report
-        fields = '__all__'
+        fields = ('username', 'road', 'text', 'photo')
 
 
 class RatingSerializer(serializers.ModelSerializer):
