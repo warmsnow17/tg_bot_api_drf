@@ -3,15 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, ContentType
 import keyboards.keyboards as kb
 from config_data.loader_bot import bot
-from handlers.suggest_idea import describe_idea
 from lexicon.lexicon_ru import SEND_AUTO_NUMBER, SEND_HAND_NUMBER, START_MESSAGE, CHOOSE_INPUT_TYPE, YOUR_PHONE_NUMBER, \
-    CHOOSE_OPTIONS, ALLOWED
-from states.tgbot_states import BaseStates, Complain, SuggestIdea
-
-
-async def get_geolocation(message: Message, state: FSMContext):
-    await message.answer(ALLOWED, reply_markup=kb.allowed_not_allowed())
-    await state.set_state(Complain.allowed_geolocation)
+    CHOOSE_OPTIONS, ALLOWED, DESCRIBE_IDEA
+from states.tgbot_states import BaseStates, Complain, SuggestIdea, AssessQualityRepair
 
 
 # Хендлер для команды /start
@@ -65,18 +59,18 @@ async def choose_options(callback_query: CallbackQuery, state: FSMContext):
 
 async def get_choice(callback_query: CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
-    # await state.update_data(choose_options=callback_query.data)
-    if callback_query.data == 'complain' or callback_query.data == 'repair':
-        await state.set_state(Complain.get_geolocation)
-        await get_geolocation(callback_query.message, state)
-    if callback_query.data == 'idea':
-        await state.set_state(SuggestIdea.describe_idea)
-        await describe_idea(callback_query.message, state)
+    if callback_query.data != 'idea':
+        await callback_query.message.answer(ALLOWED, reply_markup=kb.allowed_not_allowed())
+        if callback_query.data == 'complain':
+            await state.set_state(Complain.allowed_geolocation)
+        else:
+            await state.set_state(AssessQualityRepair.allowed_geolocation)
+    else:
+        await callback_query.message.answer(DESCRIBE_IDEA)
+        await state.set_state(SuggestIdea.get_describe_idea)
 
 
 def register(dp: Dispatcher):
-    dp.register_message_handler(get_geolocation,
-                                state=Complain.get_geolocation)
     dp.register_message_handler(start, commands=["start"], state="*")
     dp.register_message_handler(process_name, state=BaseStates.name)
     dp.register_callback_query_handler(ask_for_hand_contact, text='hand',

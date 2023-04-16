@@ -32,8 +32,8 @@ class Interface():
                     if road['status'] == 'WT':
                         return True
 
-    def send_report(self, data):
-        response = requests.post('http://127.0.0.1:8000/api/v1/reports/',
+    def send_report(self, data, url):
+        response = requests.post(url,
                                  data=data)
         logger.warning(response.json())
         if response.status_code == 201:

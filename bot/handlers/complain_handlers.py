@@ -32,7 +32,10 @@ async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, 
         except MessageToDeleteNotFound:
             pass
         await callback_query.message.answer(SEND_GEOLOCATION, reply_markup=kb.get_geolocation())
-        await state.set_state(Complain.search_object)
+        if await state.get_state() == 'Complain:allowed_geolocation':
+            await state.set_state(Complain.search_object)
+        else:
+            await state.set_state(AssessQualityRepair.search_object)
     if choice == 'not_allowed':
         try:
             await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
@@ -41,18 +44,24 @@ async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, 
         city_data = interface.get_cities_names()
         keyboard = kb.select_city(city_data)
         await callback_query.message.answer(SELECT_FROM_LIST, reply_markup=keyboard)
-        # await state.set_state(Complain.not_allowed_geolocation)
-        await state.set_state(Complain.select_from_list_pre)
+        if await state.get_state() == 'Complain:allowed_geolocation':
+            await state.set_state(Complain.select_from_list_pre)
+        else:
+            await state.set_state(AssessQualityRepair.select_from_list_pre)
 
 
 async def select_from_list_pre(callback_query: CallbackQuery, callback_data: dict, state: FSMContext,):
+    logger.warning(await state.get_state())
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
     city_id = int(callback_data['id'])
     road_data = interface.get_roads(city_id)
     logger.warning(road_data)
     keyboard = kb.select_road(road_data)
     await callback_query.message.answer(text="Выберите улицу:", reply_markup=keyboard)
-    await state.set_state(Complain.select_from_list)
+    if 'Complain' in await state.get_state():
+        await state.set_state(Complain.select_from_list)
+    else:
+        await state.set_state(AssessQualityRepair.select_from_list)
 
 
 async def search_object(message: Message, state: FSMContext):
@@ -61,14 +70,20 @@ async def search_object(message: Message, state: FSMContext):
     longitude = location.longitude
     await state.update_data(location=location, latitude=latitude, longitude=longitude)
     await message.answer(f"Ваше местоположение: широта {latitude}, долгота {longitude}", reply_markup=kb.send_button())
-    await state.set_state(Complain.select_from_list)
+    if 'Complain' in await state.get_state():
+        await state.set_state(Complain.select_from_list)
+    else:
+        await state.set_state(AssessQualityRepair.select_from_list)
 
 
 async def select_from_list(callback_query: CallbackQuery, state: FSMContext, callback_data: dict):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
     await callback_query.message.answer(YOUR_OBJECT_IS.format(_object=callback_data['name']), reply_markup=kb.check_repair())
     await state.update_data(road=int(callback_data['id']))
-    await state.set_state(Complain.check_object_in_data_base)
+    if 'Complain' in await state.get_state():
+        await state.set_state(Complain.check_object_in_data_base)
+    else:
+        await state.set_state(AssessQualityRepair.check_object_in_data_base)
 
 
 async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContext):
@@ -76,13 +91,16 @@ async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContex
     data = await state.get_data()
     choose = callback_query.data
     if choose == 'check':
-        if interface.check_status(data['road']):
-            await callback_query.message.answer(OBJECT_IN_BASE,
-                                          reply_markup=kb.continue_or_stop())
-            await state.set_state(Complain.continue_or_stop)
+        if 'Complain' in await state.get_state():
+            if interface.check_status(data['road']):
+                await callback_query.message.answer(OBJECT_IN_BASE,
+                                            reply_markup=kb.continue_or_stop())
+                await state.set_state(Complain.continue_or_stop)
+            else:
+                await callback_query.message.answer(DESCRIBE_PROBLEM)
+                await state.set_state(Complain.describe_problem)
         else:
-            await callback_query.message.answer(DESCRIBE_PROBLEM)
-            await state.set_state(Complain.describe_problem)
+            await quality_1_to_10(callback_query.message, state)
     elif choose == 'no_check':
         await allowed_not_allowed(callback_query, state, force_not_allowed=True)
 
@@ -112,8 +130,13 @@ async def photo_problem(message: Message, state: FSMContext):
     dataurl = f'data:image/{ext};base64,{encoded_string}'
     await state.update_data(photo=dataurl)
     os.remove(photo.name)
-    await message.answer(THANKS_WE_WILL_CONTACT_YOU, reply_markup=kb.yes_no_kb())
-    await state.set_state(Complain.final_yes_no)
+    data = await state.get_data()
+    if interface.send_report(data, interface.reports_url):
+        await message.answer(THANKS_WE_WILL_CONTACT_YOU, reply_markup=kb.yes_no_kb())
+        await state.set_state(Complain.final_yes_no)
+    else:
+        await message.answer('Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.')
+        await state.finish()
 
 
 async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
@@ -121,16 +144,13 @@ async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
     yes_no = callback_query.data
     if yes_no == 'yes_back_to_start':  # подумать как вноосим в state когда по второму разу юзер оставляет заявку
         await callback_query.message.answer(CHOOSE_OPTIONS, reply_markup=kb.choose_options())
+        data = await state.get_data()
+        username = data['username']
         await state.finish()
         await state.set_state(BaseStates.choose_options)
+        await state.update_data(username=username)
     if yes_no == 'no':
-        data = await state.get_data()
-        if interface.send_report(data=data):
-            await callback_query.message.answer(FINAL)
-            logger.info('POST запрос ушел')
-        else:
-            await callback_query.message.answer('Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.')
-            await state.finish()
+        await callback_query.message.answer(FINAL)
 
 
 # def road_page_callback(call):
@@ -145,10 +165,12 @@ async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
 def register(dp: Dispatcher):
     dp.register_callback_query_handler(select_from_list_pre,
                                        city_callback.filter(),
-                                       state=Complain.select_from_list_pre)
+                                       state=[Complain.select_from_list_pre,
+                                              AssessQualityRepair.select_from_list_pre])
     dp.register_callback_query_handler(allowed_not_allowed,
                                        text=['allowed', 'not_allowed'],
-                                       state=Complain.allowed_geolocation)
+                                       state=[Complain.allowed_geolocation,
+                                              AssessQualityRepair.allowed_geolocation])
     # dp.register_message_handler(search_object,
     #                             content_types=[ContentType.LOCATION],
     #                             state=Complain.search_object)
@@ -156,10 +178,12 @@ def register(dp: Dispatcher):
     #                                    lambda call: call.data.split('#')[0] == 'road')
     dp.register_callback_query_handler(select_from_list,
                                        road_callback.filter(),
-                                       state=Complain.select_from_list)
+                                       state=[Complain.select_from_list,
+                                              AssessQualityRepair.select_from_list])
     dp.register_callback_query_handler(check_exists_data_base,
                                        text=['check', 'no_check'],
-                                       state=Complain.check_object_in_data_base)
+                                       state=[Complain.check_object_in_data_base,
+                                              AssessQualityRepair.check_object_in_data_base])
     dp.register_callback_query_handler(continue_or_stop,
                                        text=['continue', 'stop'],
                                        state=Complain.continue_or_stop)
