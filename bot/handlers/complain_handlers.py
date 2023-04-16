@@ -2,10 +2,13 @@ from aiogram import Dispatcher
 from aiogram.types import CallbackQuery, Message, ContentType
 from aiogram.dispatcher import FSMContext
 import base64, os
+
+from aiogram.utils.exceptions import MessageToDeleteNotFound
 from loguru import logger
 from api.interface import interface
 
 import keyboards.keyboards as kb
+from handlers.user_handlers import get_choice
 from keyboards.callbackdata import road_callback, city_callback
 from config_data.loader_bot import bot
 from handlers.assess_quality_repair import quality_1_to_10
@@ -14,14 +17,28 @@ from lexicon.lexicon_ru import ALLOWED, SEND_GEOLOCATION, SELECT_FROM_LIST, YOUR
 from states.tgbot_states import Complain, BaseStates, AssessQualityRepair
 
 
-async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext):
-    await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
-    choice = callback_query.data
+async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, force_not_allowed=False):
+    if force_not_allowed:
+        choice = 'not_allowed'
+    else:
+        choice = callback_query.data
+    try:
+        await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
+    except MessageToDeleteNotFound:
+        pass
     if choice == 'allowed':
+        try:
+            await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
+        except MessageToDeleteNotFound:
+            pass
         await callback_query.message.answer(SEND_GEOLOCATION, reply_markup=kb.get_geolocation())
         await state.set_state(Complain.search_object)
     if choice == 'not_allowed':
-        city_data = interface.get_cities_names()  # подумать правильная ли это запись можно ли if in json()?
+        try:
+            await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
+        except MessageToDeleteNotFound:
+            pass
+        city_data = interface.get_cities_names()
         keyboard = kb.select_city(city_data)
         await callback_query.message.answer(SELECT_FROM_LIST, reply_markup=keyboard)
         # await state.set_state(Complain.not_allowed_geolocation)
@@ -66,8 +83,8 @@ async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContex
         else:
             await callback_query.message.answer(DESCRIBE_PROBLEM)
             await state.set_state(Complain.describe_problem)
-    else:
-        pass # тут сделать кнопку назад
+    elif choose == 'no_check':
+        await allowed_not_allowed(callback_query, state, force_not_allowed=True)
 
 
 async def continue_or_stop(callback_query: CallbackQuery, state: FSMContext):
@@ -123,7 +140,6 @@ async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
 #         call.message.message_id
 #     )
 #     send_character_page(call.message, page)
-
 
 
 def register(dp: Dispatcher):
