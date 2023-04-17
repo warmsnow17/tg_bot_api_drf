@@ -10,7 +10,7 @@ from api.interface import interface
 import keyboards.keyboards as kb
 from handlers.user_handlers import get_choice
 from keyboards.callbackdata import road_callback, city_callback
-from config_data.loader_bot import bot
+from config_data.loader_bot import bot, dp
 from handlers.assess_quality_repair import quality_1_to_10
 from lexicon.lexicon_ru import ALLOWED, SEND_GEOLOCATION, SELECT_FROM_LIST, YOUR_OBJECT_IS, OBJECT_IN_BASE, THANK_YOU, \
     FINAL, CHOOSE_OPTIONS, DESCRIBE_PROBLEM, GET_PHOTO, THANKS_WE_WILL_CONTACT_YOU, DESCRIBE_PROBLEM_SECOND
@@ -50,18 +50,38 @@ async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, 
             await state.set_state(AssessQualityRepair.select_from_list_pre)
 
 
-async def select_from_list_pre(callback_query: CallbackQuery, callback_data: dict, state: FSMContext,):
+async def select_from_list_pre(callback_query: CallbackQuery, callback_data: dict, state: FSMContext, ):
     logger.warning(await state.get_state())
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
     city_id = int(callback_data['id'])
     road_data = interface.get_roads(city_id)
     logger.warning(road_data)
-    keyboard = kb.select_road(road_data)
+    keyboard = kb.select_road(road_data, current_page=1)
     await callback_query.message.answer(text="Выберите улицу:", reply_markup=keyboard)
+
+    await state.update_data(city_id=city_id)
+
     if 'Complain' in await state.get_state():
         await state.set_state(Complain.select_from_list)
     else:
         await state.set_state(AssessQualityRepair.select_from_list)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('road_data_page_'), state='*')
+async def change_page(callback_query: CallbackQuery, state: FSMContext):
+    if callback_query.data == "ignore":
+        await callback_query.answer()
+        return
+
+    callback_data = callback_query.data.split('_')
+    current_page = int(callback_data[-1])
+    items_per_page = 5
+    state_data = await state.get_data()
+    city_id = state_data['city_id']
+
+    road_data = interface.get_roads(city_id)
+    keyboard = kb.select_road(road_data, current_page)
+    await callback_query.message.edit_text(text="Выберите улицу:", reply_markup=keyboard)
 
 
 async def search_object(message: Message, state: FSMContext):
