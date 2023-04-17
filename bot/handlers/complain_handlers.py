@@ -172,15 +172,7 @@ async def final_yes_no(callback_query: CallbackQuery, state: FSMContext):
         await state.update_data(username=username)
     if yes_no == 'no':
         await callback_query.message.answer(FINAL)
-
-
-# def road_page_callback(call):
-#     page = int(call.data.split('#')[1])
-#     bot.delete_message(
-#         call.message.chat.id,
-#         call.message.message_id
-#     )
-#     send_character_page(call.message, page)
+        await state.finish()
 
 
 def register(dp: Dispatcher):
@@ -195,8 +187,6 @@ def register(dp: Dispatcher):
     # dp.register_message_handler(search_object,
     #                             content_types=[ContentType.LOCATION],
     #                             state=Complain.search_object)
-    # dp.register_callback_query_handler(road_page_callback,
-    #                                    lambda call: call.data.split('#')[0] == 'road')
     dp.register_callback_query_handler(select_from_list,
                                        road_callback.filter(),
                                        state=[Complain.select_from_list,
