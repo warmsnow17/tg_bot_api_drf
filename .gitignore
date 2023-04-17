@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 api/app/temp.png
 test.py
-data.py
+api/app/data.xlsx
