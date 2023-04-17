@@ -15,15 +15,22 @@ class RatingInline(admin.StackedInline):
 
 @admin.register(Road)
 class RoadAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', )
-    list_filter = ('status', )
+    list_display = ('name', 'status',)
+    list_filter = ('status',)
     inlines = [ReportInline, RatingInline]
 
 
 @admin.register(Suggestion)
 class SuggestionAdmin(admin.ModelAdmin):
-    list_display = ('username', )
+    list_display = ('username', 'text', 'photo')
     pass
+
+
+@admin.register(Rating)
+class SuggestionAdmin(admin.ModelAdmin):
+    list_display = ('username', 'road', 'rate', 'comment')
+    pass
+
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
@@ -32,5 +39,5 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('username', )
+    list_display = ('username', 'date', 'road', 'photo', 'text')
     pass
