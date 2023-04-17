@@ -25,10 +25,10 @@ class Road(models.Model):
     geolocation = models.URLField()
     contractor = models.CharField(max_length=500, blank=True, null=True,
                                   verbose_name='Подрядчик')
-    warranty = models.DurationField(verbose_name='Гарантийный срок',
-                                    null=True, blank=True)
-    repair_date = models.DurationField(verbose_name='Дата ремонта',
-                                       null=True, blank=True)
+    warranty = models.CharField(max_length=50, verbose_name='Гарантийный срок',
+                                null=True, blank=True)
+    repair_date = models.CharField(max_length=50, verbose_name='Дата ремонта',
+                                   null=True, blank=True)
 
     def __str__(self):
         return f'{self.name}'

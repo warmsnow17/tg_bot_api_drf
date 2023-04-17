@@ -30,7 +30,7 @@ class Interface():
             for road in city['roads']:
                 if road['id'] == road_id:
                     if road['status'] == 'WT':
-                        return True
+                        return (True, road['repair_date'])
 
     def send_report(self, data, url):
         response = requests.post(url,

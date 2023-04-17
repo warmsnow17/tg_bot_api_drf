@@ -22,8 +22,15 @@ class RoadAdmin(admin.ModelAdmin):
 
 @admin.register(Suggestion)
 class SuggestionAdmin(admin.ModelAdmin):
+    list_display = ('username', )
     pass
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('username', )
+    pass
