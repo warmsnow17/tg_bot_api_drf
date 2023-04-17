@@ -4,14 +4,17 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, ContentTy
 import keyboards.keyboards as kb
 from config_data.loader_bot import bot
 from lexicon.lexicon_ru import SEND_AUTO_NUMBER, SEND_HAND_NUMBER, START_MESSAGE, CHOOSE_INPUT_TYPE, YOUR_PHONE_NUMBER, \
-    CHOOSE_OPTIONS, ALLOWED, DESCRIBE_IDEA
+    CHOOSE_OPTIONS, ALLOWED, DESCRIBE_IDEA, GET_NAME
 from states.tgbot_states import BaseStates, Complain, SuggestIdea, AssessQualityRepair
 
 
 # Хендлер для команды /start
-async def start(message: Message, state: FSMContext):
+async def start(message: Message):
     await message.answer(START_MESSAGE, reply_markup=ReplyKeyboardRemove())
 
+
+async def contact(message: Message, state: FSMContext):
+    await message.answer(GET_NAME)
     await state.set_state(BaseStates.name)
 
 
@@ -72,6 +75,7 @@ async def get_choice(callback_query: CallbackQuery, state: FSMContext):
 
 def register(dp: Dispatcher):
     dp.register_message_handler(start, commands=["start"], state="*")
+    dp.register_message_handler(contact, commands=['contact'])
     dp.register_message_handler(process_name, state=BaseStates.name)
     dp.register_callback_query_handler(ask_for_hand_contact, text='hand',
                                        state=BaseStates.phone)

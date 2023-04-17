@@ -92,8 +92,9 @@ async def check_exists_data_base(callback_query: CallbackQuery, state: FSMContex
     choose = callback_query.data
     if choose == 'check':
         if 'Complain' in await state.get_state():
-            if interface.check_status(data['road']):
-                await callback_query.message.answer(OBJECT_IN_BASE,
+            info = interface.check_status(data['road'])
+            if info[0]:
+                await callback_query.message.answer(OBJECT_IN_BASE.format(period=info[1]),
                                             reply_markup=kb.continue_or_stop())
                 await state.set_state(Complain.continue_or_stop)
             else:
