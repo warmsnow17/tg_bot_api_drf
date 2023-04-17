@@ -81,15 +81,31 @@ def get_geolocation():
 #     return keyboard
 
 
-def select_city(city_data: list):
+def select_city(city_data: list, current_page: int):
+    items_per_page = 5
+    start_item = (current_page - 1) * items_per_page
+    end_item = start_item + items_per_page
+
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
-    for item in city_data:
+
+    for item in city_data[start_item:end_item]:
         button = InlineKeyboardButton(item[0],
                                       callback_data=city_callback.new(
                                           name=item[0],
                                           id=item[1]
                                       ))
         keyboard.row(button)
+
+    total_pages = math.ceil(len(city_data) / items_per_page)
+    page_buttons = []
+    for page in range(1, total_pages + 1):
+        if page == current_page:
+            page_buttons.append(InlineKeyboardButton(f"-{page}-", callback_data="ignore"))
+        else:
+            page_buttons.append(InlineKeyboardButton(str(page), callback_data=f"city_data_page_{page}"))
+
+    keyboard.row(*page_buttons)
+
     return keyboard
 
 

@@ -31,6 +31,8 @@ class Interface():
                 if road['id'] == road_id:
                     if road['status'] == 'WT':
                         return (True, road['repair_date'])
+                    else:
+                        return (False,)
 
     def send_report(self, data, url):
         response = requests.post(url,
