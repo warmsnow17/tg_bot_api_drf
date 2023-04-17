@@ -42,12 +42,28 @@ async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, 
         except MessageToDeleteNotFound:
             pass
         city_data = interface.get_cities_names()
-        keyboard = kb.select_city(city_data)
+        keyboard = kb.select_city(city_data, current_page=1)
         await callback_query.message.answer(SELECT_FROM_LIST, reply_markup=keyboard)
         if await state.get_state() == 'Complain:allowed_geolocation':
             await state.set_state(Complain.select_from_list_pre)
         else:
             await state.set_state(AssessQualityRepair.select_from_list_pre)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('city_data_page_'), state='*')
+async def change_city_page(callback_query: CallbackQuery, state: FSMContext):
+    if callback_query.data == "ignore":
+        await callback_query.answer()
+        return
+
+    callback_data = callback_query.data.split('_')
+    current_page = int(callback_data[-1])
+    items_per_page = 5
+    state_data = await state.get_data()
+
+    city_data = interface.get_cities_names()
+    keyboard = kb.select_city(city_data, current_page)
+    await callback_query.message.edit_text(text=SELECT_FROM_LIST, reply_markup=keyboard)
 
 
 async def select_from_list_pre(callback_query: CallbackQuery, callback_data: dict, state: FSMContext, ):
