@@ -44,12 +44,13 @@ async def ask_for_hand_contact(callback_query: CallbackQuery, state: FSMContext)
 async def save_phone_contact(message: Message, state: FSMContext):
     if message.content_type == ContentType.CONTACT:
         phone_number_auto_contact = message.contact.phone_number
-        # await state.update_data(phone_number=phone_number_auto_contact)
+        phone = str(phone_number_auto_contact)
+        await state.update_data(phone=phone)
         await message.answer(
             YOUR_PHONE_NUMBER.format(phone_number=phone_number_auto_contact), reply_markup=kb.send_button())
     else:
         phone_number_text = message.text
-        # await state.update_data(phone_number=phone_number_text)
+        await state.update_data(phone=phone_number_text)
         await message.answer(YOUR_PHONE_NUMBER.format(phone_number=phone_number_text), reply_markup=kb.send_button())
     await state.set_state(BaseStates.choose_options)
 

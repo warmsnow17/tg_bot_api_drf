@@ -22,13 +22,13 @@ class RoadAdmin(admin.ModelAdmin):
 
 @admin.register(Suggestion)
 class SuggestionAdmin(admin.ModelAdmin):
-    list_display = ('username', 'text', 'photo')
+    list_display = ('username', 'phone', 'text', 'photo')
     pass
 
 
 @admin.register(Rating)
 class SuggestionAdmin(admin.ModelAdmin):
-    list_display = ('username', 'road', 'rate', 'comment')
+    list_display = ('username', 'phone', 'road', 'rate', 'comment')
     pass
 
 
@@ -39,5 +39,5 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('username', 'date', 'road', 'photo', 'text')
+    list_display = ('username', 'phone', 'date', 'road', 'photo', 'text')
     pass

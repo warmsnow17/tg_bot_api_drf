@@ -34,7 +34,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Report
-        fields = ('username', 'road', 'text', 'photo')
+        fields = ('username', 'phone', 'road', 'text', 'photo')
 
 
 class RatingSerializer(serializers.ModelSerializer):

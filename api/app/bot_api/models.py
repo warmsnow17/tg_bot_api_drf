@@ -37,6 +37,9 @@ class Road(models.Model):
 class Report(models.Model):
     username = models.CharField(verbose_name='Имя пользователя',
                                 max_length=100)
+
+    phone = models.CharField(verbose_name='Телефон', max_length=15, default='-')
+
     date = models.DateTimeField(auto_now_add=True,
                                 verbose_name='Дата и время обращения')
     road = models.ForeignKey(Road, on_delete=models.PROTECT,
@@ -48,6 +51,8 @@ class Report(models.Model):
 class Rating(models.Model):
     username = models.CharField(verbose_name='Имя пользователя',
                                 max_length=100)
+    phone = models.CharField(verbose_name='Телефон', max_length=15, default='-')
+
     road = models.ForeignKey(Road, on_delete=models.PROTECT,
                              verbose_name='Объект')
     rate = models.IntegerField(validators=[MinValueValidator(1),
@@ -59,5 +64,6 @@ class Rating(models.Model):
 class Suggestion(models.Model):
     username = models.CharField(verbose_name='Имя пользователя',
                                 max_length=100)
+    phone = models.CharField(verbose_name='Телефон', max_length=15, default='-')
     text = models.TextField(verbose_name='Текст идеи', max_length=5000)
     photo = models.ImageField(verbose_name='Фото', null=True, blank=True)
