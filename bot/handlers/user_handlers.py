@@ -14,6 +14,7 @@ async def start(message: Message):
 
 
 async def contact(message: Message, state: FSMContext):
+    await state.finish()
     await message.answer(GET_NAME)
     await state.set_state(BaseStates.name)
 

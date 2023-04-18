@@ -1,5 +1,6 @@
 import math
 
+import requests
 from aiogram.types import InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
 from .callbackdata import road_callback, city_callback
 from telegram_bot_pagination import InlineKeyboardPaginator
@@ -27,6 +28,14 @@ def send_button():
     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     send_file_btn = InlineKeyboardButton('Отправить', callback_data='send')
     keyboard.row(send_file_btn)
+    return keyboard
+
+
+def send_geo_button(road_name, road_id):
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True)
+    send_file_btn = InlineKeyboardButton('Отправить', callback_data=road_callback.new(name=road_name, id=road_id))
+    keyboard.row(send_file_btn)
+
     return keyboard
 
 
@@ -70,19 +79,8 @@ def get_geolocation():
     return keyboard
 
 
-# def select_from_list():
-#     keyboard = InlineKeyboardMarkup(resize_keyboard=True)
-#     object_1 = InlineKeyboardButton("объект 1", callback_data='object1')
-#     object_2 = InlineKeyboardButton("объект 2", callback_data='object2')
-#     object_3 = InlineKeyboardButton("объект 3", callback_data='object')
-#     keyboard.row(object_1)
-#     keyboard.row(object_2)
-#     keyboard.row(object_3)
-#     return keyboard
-
-
 def select_city(city_data: list, current_page: int):
-    items_per_page = 5
+    items_per_page = 10
     start_item = (current_page - 1) * items_per_page
     end_item = start_item + items_per_page
 
@@ -110,7 +108,7 @@ def select_city(city_data: list, current_page: int):
 
 
 def select_road(road_data: list, current_page: int):
-    items_per_page = 5
+    items_per_page = 10
     start_item = (current_page - 1) * items_per_page
     end_item = start_item + items_per_page
 

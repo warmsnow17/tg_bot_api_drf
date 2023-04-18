@@ -33,6 +33,7 @@ class Interface():
                         return (True, road['repair_date'])
                     else:
                         return (False,)
+        return (False, None)
 
     def send_report(self, data, url):
         response = requests.post(url,
@@ -40,6 +41,14 @@ class Interface():
         logger.warning(response.json())
         if response.status_code == 201:
             return True
+
+    def get_road_id_by_name(self, road_name: str):
+        data = requests.get(self.cities_url).json()
+        for city in data:
+            for road in city['roads']:
+                if road['name'] == road_name:
+                    return road['id']
+        return None
 
 
 interface = Interface()
