@@ -47,6 +47,11 @@ class Report(models.Model):
     photo = models.ImageField(verbose_name='Фото')
     text = models.TextField(verbose_name='Текст жалобы', max_length=5000)
 
+    def city_name(self):
+        return self.road.city.name
+
+    city_name.short_description = 'Город'
+
 
 class Rating(models.Model):
     username = models.CharField(verbose_name='Имя пользователя',
@@ -60,6 +65,11 @@ class Rating(models.Model):
                                verbose_name='Оценка')
     comment = models.TextField(verbose_name='Комментарий', max_length=5000)
 
+    def city_name(self):
+        return self.road.city.name
+
+    city_name.short_description = 'Город'
+
 
 class Suggestion(models.Model):
     username = models.CharField(verbose_name='Имя пользователя',
@@ -67,3 +77,4 @@ class Suggestion(models.Model):
     phone = models.CharField(verbose_name='Телефон', max_length=15, default='-')
     text = models.TextField(verbose_name='Текст идеи', max_length=5000)
     photo = models.ImageField(verbose_name='Фото', null=True, blank=True)
+
