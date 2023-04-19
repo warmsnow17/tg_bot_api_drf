@@ -10,9 +10,9 @@ networks:
 
 services:
   db:
-    image: postgres:12
+    image: postgres:13.0-alpine
     volumes:
-      - postgres:/var/lib/postgresql/data/pgdata:rw
+      - /var/lib/postgresql/data/
     env_file:
       - .env
     networks:
@@ -33,6 +33,9 @@ services:
       - internal
     env_file:
       - ./.env
+    depends_on:
+      - db
+      
 
   bot:
     build: bot/
