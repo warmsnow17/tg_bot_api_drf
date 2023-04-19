@@ -3,10 +3,10 @@ from loguru import logger
 
 
 class Interface():
-    cities_url = "http://127.0.0.1:8000/api/v1/cities/"
-    suggestions_url = "http://127.0.0.1:8000/api/v1/suggestions/"
-    reports_url = "http://127.0.0.1:8000/api/v1/reports/"
-    ratings_url = "http://127.0.0.1:8000/api/v1/ratings/"
+    cities_url = "http://web:8000/api/v1/cities/"
+    suggestions_url = "http://web:8000/api/v1/suggestions/"
+    reports_url = "http://web:8000/api/v1/reports/"
+    ratings_url = "http://web:8000/api/v1/ratings/"
 
     def get_cities_names(self):
         data = requests.get(self.cities_url).json()

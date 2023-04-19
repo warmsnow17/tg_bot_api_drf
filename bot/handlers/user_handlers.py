@@ -9,12 +9,13 @@ from states.tgbot_states import BaseStates, Complain, SuggestIdea, AssessQuality
 
 
 # Хендлер для команды /start
-async def start(message: Message):
+async def start(message: Message, state: FSMContext = None):
+    if state is not None:
+        await state.finish()
     await message.answer(START_MESSAGE, reply_markup=ReplyKeyboardRemove())
 
 
 async def contact(message: Message, state: FSMContext):
-    await state.finish()
     await message.answer(GET_NAME)
     await state.set_state(BaseStates.name)
 
