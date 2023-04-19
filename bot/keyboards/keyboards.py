@@ -3,16 +3,7 @@ import math
 import requests
 from aiogram.types import InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
 from .callbackdata import road_callback, city_callback
-from telegram_bot_pagination import InlineKeyboardPaginator
 from config_data.loader_bot import bot
-
-
-class MyPaginator(InlineKeyboardPaginator):
-    first_page_label = '<<'
-    previous_page_label = '<'
-    current_page_label = '-{}-'
-    next_page_label = '>'
-    last_page_label = '>>'
 
 
 def choose_phone_number():
