@@ -10,7 +10,7 @@ networks:
 
 services:
   db:
-    image: postgres:11
+    image: postgres:12
     volumes:
       - postgres:/var/lib/postgresql/data/pgdata:rw
     env_file:
