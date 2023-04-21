@@ -9,7 +9,8 @@ async def get_location_details(lat, lon):
         async with session.get(url) as response:
             location_data = await response.text()
             location_data = json.loads(location_data)
-            city = location_data['address']['city']
-            road_name = location_data['address']['road']
+            address = location_data.get('address', {})
+            city = address.get('city', 'Неизвестный город')
+            road_name = address.get('road', 'Неизвестная дорога')
             return city, road_name
 

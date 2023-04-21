@@ -38,7 +38,7 @@ async def allowed_not_allowed(callback_query: CallbackQuery, state: FSMContext, 
         await callback_query.message.answer(SEND_GEOLOCATION, reply_markup=kb.get_geolocation())
         if await state.get_state() == 'Complain:allowed_geolocation':
             await state.set_state(Complain.search_object)
-        else:
+        if await state.get_state() == 'AssessQualityRepair:allowed_geolocation':
             await state.set_state(AssessQualityRepair.search_object)
     if choice == 'not_allowed':
         try:
@@ -229,7 +229,7 @@ def register(dp: Dispatcher):
                                               AssessQualityRepair.allowed_geolocation])
     dp.register_message_handler(search_object,
                                 content_types=[ContentType.LOCATION],
-                                state=Complain.search_object)
+                                state=[Complain.search_object, AssessQualityRepair.search_object])
     dp.register_callback_query_handler(allowed_not_allowed,
                                        state=[Complain.allowed_geolocation,
                                               AssessQualityRepair.allowed_geolocation])
