@@ -10,7 +10,12 @@ async def get_location_details(lat, lon):
             location_data = await response.text()
             location_data = json.loads(location_data)
             address = location_data.get('address', {})
-            city = address.get('city', 'Неизвестный город')
-            road_name = address.get('road', 'Неизвестная дорога')
+            if address.get('city') is not None:
+                city = address.get('city')
+            elif address.get('town') is not None:
+                city = address.get('town')
+            elif address.get('village') is not None:
+                city = address.get('village', 'Неизвестный город')
+            road_name = address.get('road', 'Неизвестная улица')
             return city, road_name
 
